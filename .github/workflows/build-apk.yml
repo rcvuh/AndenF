@@ -1,0 +1,59 @@
+# Compila el APK de Andén en la nube (GitHub Actions) sin Android Studio.
+# Uso: sube este proyecto a un repositorio de GitHub -> pestaña Actions ->
+# "Construir APK de Andén" -> Run workflow.
+# Resultado:
+#   1) Artefacto "Anden-apk" (contiene Anden.apk).
+#   2) Release "Andén APK" con la URL fija para el canal General:
+#      https://github.com/<usuario>/<repositorio>/releases/latest/download/Anden.apk
+#      (el repositorio debe ser público para que los demás puedan descargarlo).
+name: Construir APK de Andén
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Pruebas unitarias
+        run: chmod +x gradlew && ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Compilar APK debug
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Renombrar APK con el nombre de la app
+        run: cp app/build/outputs/apk/debug/app-debug.apk Anden.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Anden-apk
+          path: Anden.apk
+
+      - name: Publicar APK con URL de descarga
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: anden-apk
+          name: Andén APK
+          body: "APK de Andén (T4.10 Probando Funcionalidad). Descarga: Anden.apk"
+          files: Anden.apk
+          make_latest: true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reporte-pruebas
+          path: app/build/reports/tests/

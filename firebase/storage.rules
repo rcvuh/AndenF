@@ -1,0 +1,34 @@
+rules_version = '2';
+
+// Cloud Storage · authapp-uaemex-7073 (Andén + InsMed)
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Andén: fotos de activos (las sube el admin, las ve cualquiera) y evidencias de reportes.
+    match /anden_activos/{archivo} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+    match /anden_evidencias/{estacion}/{archivo} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.resource.size < 50 * 1024 * 1024;
+    }
+
+    // InsMed: evidencia de entrega, solo su operador.
+    match /evidencias/{uid}/{entrega}/{archivo} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && (
+          (request.resource.contentType.matches('image/.*')
+            && request.resource.size < 5 * 1024 * 1024)
+          || (request.resource.contentType.matches('video/.*')
+            && request.resource.size < 50 * 1024 * 1024)
+        );
+      allow delete: if false;
+    }
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "project_info": {
+    "project_number": "335205813126",
+    "firebase_url": "https://authapp-uaemex-7073-94c94-default-rtdb.firebaseio.com",
+    "project_id": "authapp-uaemex-7073-94c94",
+    "storage_bucket": "authapp-uaemex-7073-94c94.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335205813126:android:7b51accae754eba54b3a07",
+        "android_client_info": {
+          "package_name": "anden.app.android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbZQg1Yv5KPowYhTsnJI1mupWGq6BLzKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335205813126:android:bf1b801bf801dde94b3a07",
+        "android_client_info": {
+          "package_name": "com.pascm.insmed"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbZQg1Yv5KPowYhTsnJI1mupWGq6BLzKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335205813126:android:3259c82ddc44509b4b3a07",
+        "android_client_info": {
+          "package_name": "mx.uaemex.firebaseauth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbZQg1Yv5KPowYhTsnJI1mupWGq6BLzKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335205813126:android:497b1a6fffbf5c324b3a07",
+        "android_client_info": {
+          "package_name": "mx.uaemex.firebaseintegrada"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbZQg1Yv5KPowYhTsnJI1mupWGq6BLzKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:335205813126:android:d4a90394d85627424b3a07",
+        "android_client_info": {
+          "package_name": "mx.uaemex.rescueroberto.firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbZQg1Yv5KPowYhTsnJI1mupWGq6BLzKs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,98 @@
+rules_version = '2';
+
+// Proyecto authapp-uaemex-7073 · Reglas combinadas (Andén + InsMed).
+// Firestore tiene UN solo archivo de reglas por proyecto: al publicar se reemplaza
+// todo, por eso aqui van los bloques de todas las apps que usan este proyecto.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // ================= ANDÉN =================
+    // Equipo desarrollador = administradores (mismos correos que domain/TeamMembers.kt).
+    function isAndenAdmin() {
+      return signedIn() && (
+        request.auth.token.email.lower() in [
+          'rcarlosgc2@outlook.com',
+          'hrodriguezf002@alumno.uaemex.mx',
+          'uvaldezo001@alumno.uaemex.mx'
+        ]
+        || request.auth.token.email.lower().matches('.*@movilidad[.]edomex[.]gob[.]mx$')
+      );
+    }
+
+    // Activos de la red: cualquiera consulta; solo administradores dan de alta/editan/eliminan.
+    match /activos/{assetId} {
+      allow read: if true;
+      allow create, update: if isAndenAdmin()
+        && request.resource.data.nombre is string
+        && request.resource.data.nombre.size() > 0
+        && request.resource.data.nombre.size() <= 280
+        && request.resource.data.activo is bool
+        && request.resource.data.categoria in ['Unidad', 'Andén', 'Tramo', 'Estación'];
+      allow delete: if isAndenAdmin();
+    }
+
+    // Alta de usuarios: cada quien escribe su perfil; solo un admin puede decir rol ADMINISTRADOR.
+    match /usuarios/{uid} {
+      allow read: if isOwner(uid) || isAndenAdmin();
+      allow create, update: if isOwner(uid)
+        && (request.resource.data.rol == 'PASAJERO'
+            || (request.resource.data.rol == 'ADMINISTRADOR' && isAndenAdmin()));
+      allow delete: if false;
+    }
+
+    // Reportes ciudadanos y paradas comunitarias (pasajero con sesión crea; admin modera).
+    match /reports/{reportId} {
+      allow read: if true;
+      allow create: if signedIn();
+      allow update, delete: if isAndenAdmin();
+    }
+    match /community_stops/{stopId} {
+      allow read: if true;
+      allow create: if signedIn();
+      allow update, delete: if isAndenAdmin();
+    }
+    match /stations/{stationId} {
+      allow read: if true;
+      allow write: if isAndenAdmin();
+    }
+
+    // ================= INSMED =================
+    match /operadores/{uid} {
+      allow read: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && request.resource.data.uid == uid
+        && request.resource.data.nombre is string
+        && request.resource.data.nombre.size() <= 80
+        && request.resource.data.numeroEmpleado.matches('^OP-[0-9]{4,8}$');
+      allow delete: if false;
+
+      match /entregas/{entregaId} {
+        allow read: if isOwner(uid);
+        allow create, update: if isOwner(uid)
+          && request.resource.data.operadorUid == uid
+          && request.resource.data.gpsValido == true
+          && request.resource.data.tempRegistrada >= request.resource.data.tempMin
+          && request.resource.data.tempRegistrada <= request.resource.data.tempMax
+          && request.resource.data.firmaUrl is string
+          && request.resource.data.etiquetaValidada == true
+          && request.resource.data.receptorNombre.size() > 0;
+        allow delete: if false;
+      }
+    }
+
+    // ================= PETRESCUE =================
+    // (pegar aquí los match de PetRescue si usa Firestore)
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
